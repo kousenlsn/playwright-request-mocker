@@ -2,7 +2,7 @@
   "name": "playwright-request-mocker",
   "description": "Automatically generate and use network request mocks inside Playwright.",
   "author": "kousenlsn",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "module": "./dist/index.js",
   "main": "./dist/index.js",
@@ -34,6 +34,7 @@
     "@playwright/test": "^1.12.3"
   },
   "scripts": {
-    "build": "rm -rf dist && node ./esbuild.js && tsc --emitDeclarationOnly --outDir dist"
+    "build": "rm -rf dist && node ./esbuild.js && tsc --emitDeclarationOnly --outDir dist",
+    "publish": "npm publish --access public"
   }
 }
