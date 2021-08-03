@@ -1,0 +1,40 @@
+{
+  "name": "playwright-request-mocker",
+  "description": "Automatically generate and use network request mocks inside Playwright.",
+  "author": "kousenlsn",
+  "version": "0.1.0",
+  "license": "MIT",
+  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+
+  "repository": {
+    "type": "git",
+    "url": "hhttps://github.com/kousenlsn/playwright-request-mocker"
+  },
+  "keywords": [
+    "Playwright",
+    "HAR",
+    "auto",
+    "automatically",
+    "Playwright/test",
+    "mock",
+    "network",
+    "requests",
+    "http",
+    "record"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@playwright/test": "^1.12.3",
+    "esbuild": "^0.12.17",
+    "globby": "^11.0.4",
+    "typescript": "4.2.2"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.12.3"
+  },
+  "scripts": {
+    "build": "rm -rf dist && node ./esbuild.js && tsc --emitDeclarationOnly --outDir dist",
+    "publish": "npm publish --access public"
+  }
+}
