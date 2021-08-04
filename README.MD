@@ -5,7 +5,7 @@
 ### Features :mag_right:
 
 Mocking your API requests takes too much precious development time, this library strives to make it effortlessly by:
-- Allowing you to declare just once the mock file location;
+- Allowing you to declare just once the hook use, it finds the mock file;
 - If the mock file does not exist yet, it will open a Playwright's chromium tab, and record all your XHR requests and responses;
 - It'll automatically intercept all registered HTTP requests defined in the mock file for any future runs.
 
@@ -54,7 +54,7 @@ test.describe('Your test', () => {
 - useNetworkRecordMocks checks if there is a file ``[invoker-file-name].mocks.json`` (or ``[invoker-file-name].[identifier].mocks.json``), if it doesn't exists, it'll open a chromiun tab using chrome's [recordHAR](https://en.wikipedia.org/wiki/HAR_(file_format)) option. When the Playwright debug mode is unpaused, it'll process such file removing every request other than XHR ones;
 - useNetworkRecordMocks will parse the existing file, and mock every request declared on it.
 
-### Different use cases
+### Different use cases :footprints:
 
 - **For a given test scenario, I need to change the mocked value**: you can either define a mock file at each scenario, or manually change the route result, like this:
 
