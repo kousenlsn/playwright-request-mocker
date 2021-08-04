@@ -25,15 +25,15 @@ export const useNetworkRecordMocks = async (
   if (fs.existsSync(path)) {
     console.log(`Using "${path}" for network request mocks.`);
     const requests = await readFile(path);
-    
+
     await mockRequests(requests, page);
 
     return requests;
   } else {
     console.log(
-      `Mocks file not found for "${
-        identifier || "the test"
-      }", recording a new one!`
+      `Mocks file not found ${
+        identifier ? `for ${identifier}` : ""
+      }, recording a new one!`
     );
     const requests = await recordHar(recordRoute, path, logRecording);
 

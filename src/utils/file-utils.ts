@@ -64,6 +64,6 @@ export const getCallerFile = (): string => {
 
   return stack
     .map((s) => s.getFileName())
-    .filter((s) => s && !s.includes("node_modules"))
+    .filter((s) => s && !s.includes("node_modules") && !s.includes("internal"))
     .pop();
 };
