@@ -105,10 +105,9 @@ test.describe('Your test', () => {
       fillForm(page),
     ]);
 
-    const expectedResponse = requests.find(r => r.url.includes('ENDPOINT_TO_TEST'))?.requestData;
+    const expectedPayload = requests.find(r => r.url.includes('ENDPOINT_TO_TEST'))?.requestData;
 
-    const response = await (await req.response()).json();
-    expect(expectedResponse).toStrictEqual(response);
+    expect(expectedPayload).toStrictEqual(req.postDataJSON());
 
   });
 
