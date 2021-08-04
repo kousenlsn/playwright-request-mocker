@@ -54,8 +54,6 @@ export const recordHar = async (
 ): Promise<RecordRequest[]> => {
   const harPath = filePath.replace(".json", ".temp.har");
 
-  console.log(harPath);
-
   const browser = await chromium.launchPersistentContext(
     "/tmp/chrome-user-data-dir",
     {
@@ -73,17 +71,30 @@ export const recordHar = async (
 
   logRecording && setHttpLogs(page);
 
+  console.log("Recording requests");
+
   await page.pause();
   await browser.close();
 
-  await waitForFileExists(filePath);
+  let requests = [];
 
-  const requests = await readHarFile(
-    harPath,
-    route.replace("https://", "").replace("http://", "").split("/")[0]
-  );
-  await writeFile(filePath, requests);
-  await removeFile(harPath);
+  try {
+    console.log("Processing recording...");
+
+    await waitForFileExists(filePath);
+
+    requests = await readHarFile(
+      harPath,
+      route.replace("https://", "").replace("http://", "").split("/")[0]
+    );
+    await writeFile(filePath, requests);
+
+    console.log("Recording successfully saved!");
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await removeFile(harPath);
+  }
 
   return requests;
 };

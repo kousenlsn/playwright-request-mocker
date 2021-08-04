@@ -54,6 +54,65 @@ test.describe('Your test', () => {
 - useNetworkRecordMocks checks if there is a file ``[invoker-file-name].mocks.json`` (or ``[invoker-file-name].[identifier].mocks.json``), if it doesn't exists, it'll open a chromiun tab using chrome's [recordHAR](https://en.wikipedia.org/wiki/HAR_(file_format)) option. When the Playwright debug mode is unpaused, it'll process such file removing every request other than XHR ones;
 - useNetworkRecordMocks will parse the existing file, and mock every request declared on it.
 
+### Different use cases
+
+- **For a given test scenario, I need to change the mocked value**: you can either define a mock file at each scenario, or manually change the route result, like this:
+
+```
+  import { useNetworkRecordMocks, mockRouteResponse } from 'playwright-request-mocker';
+
+  //...
+
+  test('my different scenario', async ({
+    page,
+  }) => {
+    const errorMessage = 'error message I expect';
+
+    page.unroute('**/ENDPOINT_TO_CHANGE');
+    mockRouteResponse(
+      page,
+      '**/ENDPOINT_TO_CHANGE',
+      { errors: [{ message: errorMessage }] },
+      400,
+    );
+
+    await Promise.all([
+      page.waitForRequest('**/ENDPOINT_TO_CHANGE'),
+      fillForm(page),
+    ]);
+
+    await page.waitForSelector(`text=${errorMessage}`);
+    const visible = await page.isVisible(`text=${errorMessage}`);
+    expect(visible).toBeTruthy();
+  });
+```
+
+- **I want to assert the payload sent against what was expected**: ``useNetworkRecordMocks`` returns every mocked request payload, you can use it to assert the values:
+
+```
+  test('my different scenario', async ({
+    page,
+  }) => {
+
+    const requests = await useNetworkRecordMocks(
+      page,
+      undefined,
+      `${process.env.APP_URL}/test-route`,
+    );
+
+    const [req] = await Promise.all([
+      page.waitForRequest('**/ENDPOINT_TO_TEST'),
+      fillForm(page),
+    ]);
+
+    const expectedResponse = requests.find(r => r.url.includes('ENDPOINT_TO_TEST'))?.requestData;
+
+    const response = await (await req.response()).json();
+    expect(expectedResponse).toStrictEqual(response);
+
+  });
+
+```
 
 ----
 
