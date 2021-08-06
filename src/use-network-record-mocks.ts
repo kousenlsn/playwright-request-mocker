@@ -31,8 +31,8 @@ export const useNetworkRecordMocks = async (
     return requests;
   } else {
     console.log(
-      `Mocks file not found ${
-        identifier ? `for ${identifier}` : ""
+      `Mocks file not found${
+        identifier ? ` for ${identifier}` : ""
       }, recording a new one!`
     );
     const requests = await recordHar(recordRoute, path, logRecording);

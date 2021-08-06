@@ -11,6 +11,7 @@ export interface HAR {
         response: {
           content: {
             text: string;
+            mimeType: string;
           };
         };
       }
