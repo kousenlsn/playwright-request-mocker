@@ -2,9 +2,11 @@
 
 *Automatically generate and use network request mocks inside Playwright!*
 
+**!! Currently only working with Linux and MacOS, still working on Win version !!**
+
 ### Features :mag_right:
 
-Mocking your API requests takes too much precious development time, this library strives to make it effortlessly by:
+Mocking your API requests takes too much precious development time, this library strives to make it effortless by:
 - Allowing you to declare just once the hook use, it finds the mock file;
 - If the mock file does not exist yet, it will open a Playwright's chromium tab, and record all your XHR requests and responses;
 - It'll automatically intercept all registered HTTP requests defined in the mock file for any future runs.

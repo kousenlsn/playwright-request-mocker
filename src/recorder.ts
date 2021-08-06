@@ -25,14 +25,14 @@ const readHarFile = (path: string, host: string): Promise<RecordRequest[]> => {
               !url.includes(host) &&
               !/(.png)|(.jpeg)|(.webp)|(.jpg)|(.gif)|(.css)|(.js)|(.woff2)/.test(
                 url
-              )
+              ) &&
+              !/(image)|(font)|(javascript)/.test(e.response.content.mimeType)
             );
           })
           .map(({ request, response }) => {
-            const responseString = Buffer.from(
-              response.content.text,
-              "base64"
-            ).toString();
+            const responseString = response.content.text
+              ? Buffer.from(response.content.text, "base64").toString()
+              : "{}";
 
             return {
               url: endpointOfUrl(request.url),
@@ -89,10 +89,12 @@ export const recordHar = async (
     );
     await writeFile(filePath, requests);
 
+    await removeFile(harPath);
+
     console.log("Recording successfully saved!");
   } catch (e) {
-    console.error(e)
-  } finally {
+    console.error(e);
+
     await removeFile(harPath);
   }
 
