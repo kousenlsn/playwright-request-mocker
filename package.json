@@ -8,7 +8,7 @@
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": "hhttps://github.com/kousenlsn/playwright-request-mocker"
+    "url": "https://github.com/kousenlsn/playwright-request-mocker"
   },
   "keywords": [
     "Playwright",
@@ -27,12 +27,13 @@
     "@playwright/test": "^1.12.3",
     "esbuild": "^0.12.17",
     "globby": "^11.0.4",
-    "typescript": "4.2.2"
+    "typescript": "4.2.2",
+    "rimraf": "^3.0.2"
   },
   "peerDependencies": {
     "@playwright/test": "^1.12.3"
   },
   "scripts": {
-    "build": "rm -rf dist && node ./esbuild.js && tsc --emitDeclarationOnly --outDir dist"
+    "build": "rimraf dist && node ./esbuild.js && tsc --emitDeclarationOnly --outDir dist"
   }
 }
