@@ -11,7 +11,7 @@ async function _findEntryPoints() {
 }
 
 function main() {
-  _findEntryPoints().then((result) => {
+  _findEntryPoints().then((result) => {  
     esbuild
       .build({
         entryPoints: result,
@@ -19,8 +19,7 @@ function main() {
         outdir: 'dist',
         format: 'cjs',
         sourcemap: 'external',
-        platform: 'node',
-        // external: ['@playwright/test'],
+        platform: 'node',    
       })
       .catch(() => process.exit(1));
   });
