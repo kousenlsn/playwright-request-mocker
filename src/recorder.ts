@@ -1,5 +1,6 @@
 import { chromium } from "@playwright/test";
 import fs from "fs";
+import os from "os";
 
 import {
   removeFile,
@@ -14,13 +15,13 @@ const readHarFile = (path: string, host: string): Promise<RecordRequest[]> => {
   return new Promise((resolve, reject) => {
     fs.readFile(path, (err, data) => {
       if (err) reject(err);
-      else {
+      else {      
         const result: HAR = JSON.parse(data.toString());
 
         const xgrRequests: RecordRequest[] = result.log.entries
           .filter((e) => {
             const url: string = e.request.url;
-
+            
             return (
               !url.includes(host) &&
               !/(.png)|(.jpeg)|(.webp)|(.jpg)|(.gif)|(.css)|(.js)|(.woff2)/.test(
@@ -53,9 +54,9 @@ export const recordHar = async (
   logRecording = false
 ): Promise<RecordRequest[]> => {
   const harPath = filePath.replace(".json", ".temp.har");
-
+  
   const browser = await chromium.launchPersistentContext(
-    "/tmp/chrome-user-data-dir",
+    `${os.tmpdir()}/chrome-user-data-dir`,
     {
       headless: false,
       viewport: null,
