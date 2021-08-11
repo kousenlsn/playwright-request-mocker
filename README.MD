@@ -2,8 +2,6 @@
 
 *Automatically generate and use network request mocks inside Playwright!*
 
-**!! Currently only working with Linux and MacOS, still working on Win version !!**
-
 ### Features :mag_right:
 
 Mocking your API requests takes too much precious development time, this library strives to make it effortless by:
@@ -52,9 +50,21 @@ test.describe('Your test', () => {
 });
 ```
 
-2. Run in debug mode and headed;
+1. Run in debug mode;
+- PWDEBUG=console forces Playwright to run headed, disables the timeouts and shows the console helper. 
 
-    - e.g. ``PWDEBUG=console playwright test --headed``;
+```
+// Linux/macOS
+PWDEBUG=console npm run playwright test
+
+// Windows on cmd.exe
+set PWDEBUG=console
+npm run playwright test
+
+// Windows on PowerShell
+$env:PWDEBUG="console"
+npm run playwright test
+```
 
 - If the mock file does not exist yet, it'll open a new tab and will be recording all the XHR requests as you navigate. When you think you recorded everything you needed, press the resume button in the ``playwright/test`` UI.
 - After it, or if the mock file ever exists, it will use the results to run your test scenario.
