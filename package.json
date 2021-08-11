@@ -2,7 +2,7 @@
   "name": "playwright-request-mocker",
   "description": "Automatically generate and use network request mocks inside Playwright.",
   "author": "kousenlsn",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "module": "./dist/index.js",
   "main": "./dist/index.js",
