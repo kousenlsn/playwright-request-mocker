@@ -23,10 +23,16 @@ Mocking your API requests takes too much precious development time, this library
 
     - e.g.
 ```
+import { useNetworkRecordMocks } from 'playwright-request-mocker';          // if using .mjs / .ts
+// const { useNetworkRecordMocks } = require('playwright-request-mocker');  //if using .js
+
 test.describe('Your test', () => {
   // If your network requests/responses are the same for every test scenario, define it here.
   test.beforeEach(async ({ page }) => {
-    await useNetworkRecordMocks(page, undefined, `${process.env.APP_URL}/page-you-are-testing`);
+    await useNetworkRecordMocks(page, {
+      recordRoute: `${process.env.APP_URL}/page-you-are-testing`,
+    });
+
     await page.goto(`${process.env.APP_URL}/page-you-are-testing`);
   });
 
@@ -34,7 +40,10 @@ test.describe('Your test', () => {
   test('scenario1', async ({ page }) => {
     // It'll generate a new file if it does not exist (".spec.scenario1.mocks.json")
     // then it'll read it and mock all defined network requests.
-    await useNetworkRecordMocks(page, 'scenario1', `${process.env.APP_URL}/page-you-are-testing`);
+    await useNetworkRecordMocks(page, {
+      identifier: 'scenario1',
+      recordRoute: `${process.env.APP_URL}/page-you-are-testing`
+    });
 
     await page.goto(`${process.env.APP_URL}/page-you-are-testing`);
 
@@ -58,15 +67,52 @@ test.describe('Your test', () => {
 
 ### Different use cases :footprints:
 
-- **For a given test scenario, I need to change the mocked value**: you can either define a mock file at each scenario, or manually change the route result, like this:
+- **For a given test scenario, I need to change the mocked value**: there are 3 ways to achieve this, 1 being creating a new specific mock file at each scenario (by calling useNetworkRecordMocks inside each test with a identifier), and others being overriding the route response, like the following:
 
+Overriding approach: for when the ``useNetworkRecordMocks`` call is inside the test scenario:
 ```
   import { useNetworkRecordMocks, mockRouteResponse } from 'playwright-request-mocker';
 
-  //...
+  // [...]
 
   test('my different scenario', async ({
     page,
+  }) => {
+    const errorMessage = 'error message I expect';
+
+    await useNetworkRecordMocks(page, {
+      recordRoute: `${process.env.APP_URL}/page-you-are-testing`,
+      overrideResponses: {
+        "/ENDPOINT_TO_CHANGE": { errors: [{ message: errorMessage }] }
+      }
+    });
+
+    await page.goto(`${process.env.APP_URL}/page-you-are-testing`);
+
+    await Promise.all([
+      page.waitForRequest('**/ENDPOINT_TO_CHANGE'),
+      fillForm(page),
+    ]);
+
+    await page.waitForSelector(`text=${errorMessage}`);
+    const visible = await page.isVisible(`text=${errorMessage}`);
+    expect(visible).toBeTruthy();
+  });
+```
+   Unrouting approach: for when the ``useNetworkRecordMocks`` call is inside a ``beforeEach``:
+```
+
+test.describe('Test', () => {
+  test.beforeEach(async ({ page }) => {
+    await useNetworkRecordMocks(page, {
+      recordRoute: `${process.env.APP_URL}/page-you-are-testing`,
+    });
+
+    await page.goto(`${process.env.APP_URL}/page-you-are-testing`);
+  });
+
+  test('my different scenario', async ({
+    page
   }) => {
     const errorMessage = 'error message I expect';
 
@@ -87,6 +133,7 @@ test.describe('Your test', () => {
     const visible = await page.isVisible(`text=${errorMessage}`);
     expect(visible).toBeTruthy();
   });
+}
 ```
 
 - **I want to assert the payload sent against what was expected**: ``useNetworkRecordMocks`` returns every mocked request payload, you can use it to assert the values:
@@ -98,8 +145,9 @@ test.describe('Your test', () => {
 
     const requests = await useNetworkRecordMocks(
       page,
-      undefined,
-      `${process.env.APP_URL}/test-route`,
+      {
+        recordRoute: `${process.env.APP_URL}/test-route`,
+      }
     );
 
     const [req] = await Promise.all([
