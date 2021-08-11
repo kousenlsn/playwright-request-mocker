@@ -75,6 +75,7 @@ export const recordHar = async (
   console.log("Recording requests");
 
   await page.pause();
+  await page.close();
   await browser.close();
 
   let requests = [];
