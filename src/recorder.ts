@@ -27,7 +27,7 @@ const readHarFile = (path: string, host: string): Promise<RecordRequest[]> => {
               !/(.png)|(.jpeg)|(.webp)|(.jpg)|(.gif)|(.css)|(.js)|(.woff2)/.test(
                 url
               ) &&
-              !/(image)|(font)|(javascript)/.test(e.response.content.mimeType)
+              !/(image)|(font)|(javascript)|(css)/.test(e.response.content.mimeType)
             );
           })
           .map(({ request, response }) => {
