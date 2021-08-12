@@ -1,6 +1,5 @@
 import fs from "fs";
 import url from "url";
-
 import { RecordRequest } from "../models";
 
 export const writeFile = (
@@ -63,12 +62,13 @@ export const getCallerFile = (): string => {
   const stack = err.stack as any;
   Error.prepareStackTrace = undefined;
 
-  const callerFileUrl = stack
+  const callerFile = stack
     .map((s) => s.getFileName())
     .filter((s) => s && !s.includes("node_modules") && !s.includes("internal"))
     .pop();
 
-  const callerFilePath = url.fileURLToPath(callerFileUrl);
-
+  const isFileUrl = callerFile.includes("file:");
+  const callerFilePath = isFileUrl ? url.fileURLToPath(callerFile) : callerFile;
+ 
   return callerFilePath;
 };
