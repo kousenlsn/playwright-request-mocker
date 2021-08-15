@@ -1,12 +1,12 @@
 import fs from "fs";
-
+import url from "url";
 import { RecordRequest } from "../models";
 
 export const writeFile = (
   filePath: string,
   requests: RecordRequest[]
 ): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {    
     fs.writeFile(filePath, JSON.stringify({ requests }), (err) => {
       if (err) reject(err);
       else resolve();
@@ -62,8 +62,13 @@ export const getCallerFile = (): string => {
   const stack = err.stack as any;
   Error.prepareStackTrace = undefined;
 
-  return stack
+  const callerFile = stack
     .map((s) => s.getFileName())
     .filter((s) => s && !s.includes("node_modules") && !s.includes("internal"))
     .pop();
+
+  const isFileUrl = callerFile.includes("file:");
+  const callerFilePath = isFileUrl ? url.fileURLToPath(callerFile) : callerFile;
+ 
+  return callerFilePath;
 };
