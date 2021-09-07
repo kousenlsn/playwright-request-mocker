@@ -7,7 +7,7 @@ export const writeFile = (
   requests: RecordRequest[]
 ): Promise<void> => {
   return new Promise((resolve, reject) => {    
-    fs.writeFile(filePath, JSON.stringify({ requests }), (err) => {
+    fs.writeFile(filePath, JSON.stringify({ requests }, null, 2), (err) => {
       if (err) reject(err);
       else resolve();
     });

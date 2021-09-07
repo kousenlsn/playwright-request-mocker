@@ -2,8 +2,8 @@ import { Page } from "@playwright/test";
 import fs from "fs";
 
 import { RecordRequest } from "./models";
-import { recordHar } from "./recorder";
-import { getCallerFile, mockRequests, readFile } from "./utils";
+import { readHarFile, recordHar } from "./recorder";
+import { getCallerFile, mockRequests, readFile, writeFile } from "./utils";
 
 const mergeOverriddenResponses = (
   override: { [key: string]: any },
@@ -34,38 +34,40 @@ export const useNetworkRecordMocks = async (
     overrideResponses?: { [key: string]: any };
   } = {}
 ): Promise<RecordRequest[]> => {
-  const {
-    identifier,
-    recordRoute,
-    logRecording,
-    overrideResponses,
-  } = configs || {};
+  const { identifier, recordRoute, logRecording, overrideResponses } =
+    configs || {};
 
-  const path = `${getCallerFile().replace(".ts", "").replace(".js", "")}${
+  const basePath = `${getCallerFile().replace(".ts", "").replace(".js", "")}${
     identifier ? `.${identifier}` : ""
-  }.mocks.json`;
+  }`;
+
+  const path = `${basePath}.mocks.json`;
+
+  let requests: RecordRequest[] = [];
 
   if (fs.existsSync(path)) {
     console.log(`Using "${path}" for network request mocks.`);
-    const requests = await readFile(path);
+    requests = await readFile(path);
+  } else if (fs.existsSync(`${basePath}.har`)) {
+    console.log(`A HAR file was found for "${basePath}", creating a mock file and using it.`);
 
-    const nextRequests = !overrideResponses
-      ? requests
-      : mergeOverriddenResponses(overrideResponses, requests);
-
-    await mockRequests(nextRequests, page);
-
-    return requests;
+    requests = await readHarFile(`${basePath}.har`, recordRoute);
+    await writeFile(path, requests);
   } else {
     console.log(
       `Mocks file not found${
         identifier ? ` for ${identifier}` : ""
       }, recording a new one!`
     );
-    const requests = await recordHar(recordRoute, path, logRecording);
 
-    await mockRequests(requests, page);
-
-    return requests;
+    requests = await recordHar(recordRoute, path, logRecording);
   }
+
+  if (!!overrideResponses) {
+    requests = mergeOverriddenResponses(overrideResponses, requests);
+  }
+
+  await mockRequests(requests, page);
+
+  return requests;
 };

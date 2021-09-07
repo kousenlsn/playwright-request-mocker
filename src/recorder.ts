@@ -11,23 +11,30 @@ import {
 } from "./utils";
 import { HAR, RecordRequest } from "./models";
 
-const readHarFile = (path: string, host: string): Promise<RecordRequest[]> => {
+export const readHarFile = (path: string, route: string): Promise<RecordRequest[]> => {
+  const host = route
+    .replace("https://", "")
+    .replace("http://", "")
+    .split("/")[0];
+
   return new Promise((resolve, reject) => {
     fs.readFile(path, (err, data) => {
       if (err) reject(err);
-      else {      
+      else {
         const result: HAR = JSON.parse(data.toString());
 
         const xgrRequests: RecordRequest[] = result.log.entries
           .filter((e) => {
             const url: string = e.request.url;
-            
+
             return (
               !url.includes(host) &&
               !/(.png)|(.jpeg)|(.webp)|(.jpg)|(.gif)|(.css)|(.js)|(.woff2)/.test(
                 url
               ) &&
-              !/(image)|(font)|(javascript)|(css)/.test(e.response.content.mimeType)
+              !/(image)|(font)|(javascript)|(css)|(html)|(text\/plain)/.test(
+                e.response.content.mimeType
+              )
             );
           })
           .map(({ request, response }) => {
@@ -54,7 +61,7 @@ export const recordHar = async (
   logRecording = false
 ): Promise<RecordRequest[]> => {
   const harPath = filePath.replace(".json", ".temp.har");
-  
+
   const browser = await chromium.launchPersistentContext(
     `${os.tmpdir()}/chrome-user-data-dir`,
     {
@@ -85,10 +92,7 @@ export const recordHar = async (
 
     await waitForFileExists(filePath);
 
-    requests = await readHarFile(
-      harPath,
-      route.replace("https://", "").replace("http://", "").split("/")[0]
-    );
+    requests = await readHarFile(harPath, route);
     await writeFile(filePath, requests);
 
     await removeFile(harPath);

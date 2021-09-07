@@ -173,6 +173,15 @@ test.describe('Test', () => {
 
 ```
 
+- **I already have a HAR recorded file that I want to use**: as long as it follows the same name structure as the file that is using it, the lib will prioritize it over recording a new one to generate the new mocks.json file:
+```
+  /tests
+  |- my-test.spec.js
+  |- my-test.spec.har
+  |- my-test.spec.identifier.har
+
+```
+
 ----
 
 
