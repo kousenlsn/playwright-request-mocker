@@ -20,7 +20,7 @@ Mocking your API requests takes too much precious development time, this library
 1. Add to a ``.spec`` file, inside a ``beforeEach`` or ``test`` method, the hook call ``useNetworkRecordMocks`` passing the test context page, identifier of the mock (only necessary if each test scenario has a different mock), and a route to be used by the recording tab if there is no mock file yet;
 
     - e.g.
-```
+``` ts
 import { useNetworkRecordMocks } from 'playwright-request-mocker';          // if using .mjs / .ts
 // const { useNetworkRecordMocks } = require('playwright-request-mocker');  //if using .js
 
@@ -80,7 +80,7 @@ npm run playwright test
 - **For a given test scenario, I need to change the mocked value**: there are 3 ways to achieve this, 1 being creating a new specific mock file at each scenario (by calling useNetworkRecordMocks inside each test with a identifier), and others being overriding the route response, like the following:
 
 Overriding approach: for when the ``useNetworkRecordMocks`` call is inside the test scenario:
-```
+``` ts
   import { useNetworkRecordMocks, mockRouteResponse } from 'playwright-request-mocker';
 
   // [...]
@@ -110,7 +110,7 @@ Overriding approach: for when the ``useNetworkRecordMocks`` call is inside the t
   });
 ```
    Unrouting approach: for when the ``useNetworkRecordMocks`` call is inside a ``beforeEach``:
-```
+``` ts
 
 test.describe('Test', () => {
   test.beforeEach(async ({ page }) => {
@@ -148,7 +148,7 @@ test.describe('Test', () => {
 
 - **I want to assert the payload sent against what was expected**: ``useNetworkRecordMocks`` returns every mocked request payload, you can use it to assert the values:
 
-```
+``` ts
   test('my different scenario', async ({
     page,
   }) => {
