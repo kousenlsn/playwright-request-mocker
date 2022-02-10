@@ -42,10 +42,18 @@ export const readHarFile = (path: string, route: string): Promise<RecordRequest[
               ? Buffer.from(response.content.text, "base64").toString()
               : "{}";
 
+            let requestData;
+
+            try {
+              requestData = JSON.parse(request?.postData?.text || "{}")
+            } catch (e) {
+              requestData = request?.postData?.text
+            }
+
             return {
               url: endpointOfUrl(request.url),
               request,
-              requestData: JSON.parse(request?.postData?.text || "{}"),
+              requestData: requestData,
               response: JSON.parse(responseString),
             };
           });
